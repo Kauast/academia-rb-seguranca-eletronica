@@ -48,3 +48,12 @@
 - [x] Navegação entre aulas: botões Anterior/Próxima na LessonPage
 - [x] Notificações: notifyOwner ao completar aula e ao emitir certificado
 - [ ] Domínio próprio: configurar academia.rbseguranca.com.br no painel (requer ação manual no painel Settings → Domains)
+
+## Identidade Visual v3
+- [x] Logo da empresa (leão com escudo) em todos os headers (Home, Dashboard, TrailPage, LessonPage, QuizPage, ProfilePage, AdminLayout)
+- [x] Paleta de cores dourada premium (OKLCH) com fundo azul-marinho escuro
+- [x] Fonte Plus Jakarta Sans para títulos e Inter para corpo
+- [x] Favicon do logo no browser
+- [x] Scrollbar personalizada com acento dourado
+- [x] Animações suaves nos cards (hover translate)
+- [x] Checkpoint v3 guardado — versão 286f62d9
