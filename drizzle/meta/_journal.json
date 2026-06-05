@@ -1,5 +1,20 @@
 {
   "version": "7",
   "dialect": "mysql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1780674728273,
+      "tag": "0000_lively_zaladane",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1780674862596,
+      "tag": "0001_lame_master_mold",
+      "breakpoints": true
+    }
+  ]
 }

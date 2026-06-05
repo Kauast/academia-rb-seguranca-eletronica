@@ -1,0 +1,187 @@
+import { useAuth } from "@/_core/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import { trpc } from "@/lib/trpc";
+import { useLocation, useParams } from "wouter";
+import { getLoginUrl } from "@/const";
+import { toast } from "sonner";
+import { Streamdown } from "streamdown";
+import { ChevronLeft, BookOpen, Video, CheckCircle2, Shield } from "lucide-react";
+
+export default function LessonPage() {
+  const { lessonId } = useParams<{ lessonId: string }>();
+  const id = parseInt(lessonId ?? "0", 10);
+  const { isAuthenticated, loading } = useAuth();
+  const [, navigate] = useLocation();
+  const utils = trpc.useUtils();
+
+  const { data: lesson, isLoading } = trpc.lessons.byId.useQuery({ id }, { enabled: !!id && isAuthenticated });
+
+  const { data: course } = trpc.courses.byId.useQuery(
+    { id: lesson?.courseId ?? 0 },
+    { enabled: !!lesson?.courseId }
+  );
+
+  const { data: trail } = trpc.trails.byId.useQuery(
+    { id: course?.trailId ?? 0 },
+    { enabled: !!course?.trailId }
+  );
+
+  const { data: progress } = trpc.progress.forTrail.useQuery(
+    { trailId: course?.trailId ?? 0 },
+    { enabled: !!course?.trailId && isAuthenticated }
+  );
+
+  const markComplete = trpc.lessons.markComplete.useMutation({
+    onSuccess: () => {
+      utils.progress.forTrail.invalidate({ trailId: course?.trailId ?? 0 });
+      utils.progress.overview.invalidate();
+      toast.success("Aula marcada como concluída!");
+    },
+  });
+
+  if (loading) return <LessonSkeleton />;
+
+  if (!isAuthenticated) {
+    window.location.href = getLoginUrl();
+    return null;
+  }
+
+  if (isLoading) return <LessonSkeleton />;
+
+  if (!lesson) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-muted-foreground mb-4">Aula não encontrada.</p>
+          <Button onClick={() => navigate("/dashboard")}>Voltar ao Dashboard</Button>
+        </div>
+      </div>
+    );
+  }
+
+  const isDone = progress?.completedIds.includes(lesson.id) ?? false;
+
+  const handleMarkComplete = () => {
+    if (!course || !trail) return;
+    markComplete.mutate({ lessonId: lesson.id, courseId: course.id, trailId: trail.id });
+  };
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Navbar */}
+      <header className="sticky top-0 z-50 border-b border-border/50 backdrop-blur-md bg-background/80">
+        <div className="container flex items-center justify-between h-16">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <Shield className="w-4 h-4 text-primary-foreground" />
+            </div>
+            <span className="font-bold text-lg">Academia RB</span>
+          </div>
+        </div>
+      </header>
+
+      <main className="container py-8 max-w-4xl">
+        {/* Breadcrumb */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mb-6 -ml-2 text-muted-foreground"
+          onClick={() => trail ? navigate(`/trilha/${trail.slug}`) : navigate("/dashboard")}
+        >
+          <ChevronLeft className="w-4 h-4 mr-1" />
+          {trail ? trail.name : "Voltar"}
+        </Button>
+
+        {/* Cabeçalho */}
+        <div className="flex items-start justify-between gap-4 mb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              {lesson.type === "apostila"
+                ? <BookOpen className="w-4 h-4 text-primary" />
+                : <Video className="w-4 h-4 text-accent" />}
+              <Badge variant="secondary" className="text-xs capitalize">{lesson.type}</Badge>
+              {isDone && (
+                <Badge className="text-xs bg-green-500/20 text-green-400 border-green-500/30">
+                  <CheckCircle2 className="w-3 h-3 mr-1" /> Concluída
+                </Badge>
+              )}
+            </div>
+            <h1 className="text-2xl font-bold">{lesson.title}</h1>
+            {course && <p className="text-sm text-muted-foreground mt-1">{course.title}</p>}
+          </div>
+          {!isDone && (
+            <Button
+              onClick={handleMarkComplete}
+              disabled={markComplete.isPending}
+              className="shrink-0"
+            >
+              <CheckCircle2 className="w-4 h-4 mr-2" />
+              Marcar como concluída
+            </Button>
+          )}
+        </div>
+
+        {/* Conteúdo */}
+        <div className="rounded-xl border border-border/50 bg-card p-6 md:p-8">
+          {lesson.type === "videoaula" && lesson.videoUrl ? (
+            <div className="space-y-6">
+              <div className="aspect-video rounded-lg overflow-hidden bg-black">
+                {lesson.videoUrl.includes("youtube.com") || lesson.videoUrl.includes("youtu.be") ? (
+                  <iframe
+                    src={lesson.videoUrl.replace("watch?v=", "embed/").replace("youtu.be/", "www.youtube.com/embed/")}
+                    className="w-full h-full"
+                    allowFullScreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  />
+                ) : (
+                  <video src={lesson.videoUrl} controls className="w-full h-full" />
+                )}
+              </div>
+              {lesson.content && (
+                <div className="prose prose-invert max-w-none">
+                  <Streamdown>{lesson.content}</Streamdown>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="prose prose-invert max-w-none">
+              {lesson.content
+                ? <Streamdown>{lesson.content}</Streamdown>
+                : <p className="text-muted-foreground">Conteúdo não disponível.</p>}
+            </div>
+          )}
+        </div>
+
+        {/* Botão de conclusão no final */}
+        {!isDone && (
+          <div className="mt-8 flex justify-center">
+            <Button
+              size="lg"
+              onClick={handleMarkComplete}
+              disabled={markComplete.isPending}
+              className="glow-primary px-10"
+            >
+              <CheckCircle2 className="w-5 h-5 mr-2" />
+              Concluir esta aula
+            </Button>
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+function LessonSkeleton() {
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="h-16 border-b border-border/50" />
+      <div className="container py-8 max-w-4xl space-y-4">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-10 w-2/3" />
+        <Skeleton className="h-96" />
+      </div>
+    </div>
+  );
+}
