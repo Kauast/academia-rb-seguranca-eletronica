@@ -39,4 +39,12 @@
 
 ## Qualidade
 - [x] Testes Vitest para quiz (regra 90%, limite diário, elegibilidade certificado) — 12 testes passando
-- [ ] Checkpoint final guardado
+- [x] Checkpoint final guardado — versão a1c13e0c
+
+## Melhorias v2
+- [x] Certificado: guardar studentName no schema e no endpoint issue
+- [x] Certificado: redesenhar como página web profissional com nome do titular visível
+- [x] Navegação entre aulas: endpoints previousLesson e nextLesson no backend
+- [x] Navegação entre aulas: botões Anterior/Próxima na LessonPage
+- [x] Notificações: notifyOwner ao completar aula e ao emitir certificado
+- [ ] Domínio próprio: configurar academia.rbseguranca.com.br no painel

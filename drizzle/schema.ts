@@ -125,6 +125,8 @@ export const certificates = mysqlTable("certificates", {
   userId: int("userId").notNull(),
   trailId: int("trailId").notNull(),
   code: varchar("code", { length: 64 }).notNull().unique(), // código único de verificação
+  studentName: varchar("studentName", { length: 256 }), // nome do aluno no momento da emissão
+  trailName: varchar("trailName", { length: 256 }),     // nome da trilha no momento da emissão
   issuedAt: timestamp("issuedAt").defaultNow().notNull(),
 });
 

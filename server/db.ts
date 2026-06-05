@@ -368,6 +368,22 @@ export async function createCertificate(data: InsertCertificate) {
   return getCertificateByCode(data.code);
 }
 
+/**
+ * Retorna a aula anterior ou próxima dentro do mesmo curso.
+ * direction: 'prev' | 'next'
+ */
+export async function getAdjacentLesson(lessonId: number, direction: 'prev' | 'next') {
+  const db = await getDb();
+  if (!db) return undefined;
+  const current = await getLessonById(lessonId);
+  if (!current) return undefined;
+  const all = await getLessonsByCourse(current.courseId, true);
+  const idx = all.findIndex((l) => l.id === lessonId);
+  if (idx === -1) return undefined;
+  const target = direction === 'prev' ? all[idx - 1] : all[idx + 1];
+  return target ?? undefined;
+}
+
 // ─── Progress helpers ─────────────────────────────────────────────────────────
 export async function countLessonsInTrail(trailId: number): Promise<number> {
   const db = await getDb();

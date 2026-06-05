@@ -18,6 +18,7 @@ import {
   deleteLesson,
   deleteQuestion,
   deleteTrail,
+  getAdjacentLesson,
   getAllCertificates,
   getAllTrails,
   getAllUsers,
@@ -43,6 +44,7 @@ import {
   updateQuestion,
   updateTrail,
 } from "./db";
+import { notifyOwner } from "./_core/notification";
 
 // ─── Admin guard ──────────────────────────────────────────────────────────────
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -171,9 +173,21 @@ export const appRouter = router({
 
     markComplete: protectedProcedure
       .input(z.object({ lessonId: z.number(), courseId: z.number(), trailId: z.number() }))
-      .mutation(({ input, ctx }) =>
-        markLessonComplete({ userId: ctx.user.id, lessonId: input.lessonId, courseId: input.courseId, trailId: input.trailId }),
-      ),
+      .mutation(async ({ input, ctx }) => {
+        const result = await markLessonComplete({ userId: ctx.user.id, lessonId: input.lessonId, courseId: input.courseId, trailId: input.trailId });
+        // Notificar owner sobre progresso
+        const lesson = await getLessonById(input.lessonId);
+        const trail = await getTrailById(input.trailId);
+        await notifyOwner({
+          title: `✅ Aula concluída`,
+          content: `**${ctx.user.name ?? ctx.user.openId}** concluiu a aula **"${lesson?.title ?? input.lessonId}"** na trilha **${trail?.name ?? input.trailId}**.`,
+        }).catch(() => {});
+        return result;
+      }),
+
+    adjacent: protectedProcedure
+      .input(z.object({ lessonId: z.number(), direction: z.enum(["prev", "next"]) }))
+      .query(({ input }) => getAdjacentLesson(input.lessonId, input.direction)),
 
     create: adminProcedure
       .input(z.object({
@@ -363,8 +377,22 @@ export const appRouter = router({
         if (total === 0) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "A trilha não possui aulas cadastradas." });
         if (completed < total) throw new TRPCError({ code: "PRECONDITION_FAILED", message: `Conclua todas as aulas da trilha antes de emitir o certificado (${completed}/${total} concluídas).` });
 
+        const trail = await getTrailById(input.trailId);
         const code = nanoid(16).toUpperCase();
-        const cert = await createCertificate({ userId: ctx.user.id, trailId: input.trailId, code });
+        const cert = await createCertificate({
+          userId: ctx.user.id,
+          trailId: input.trailId,
+          code,
+          studentName: ctx.user.name ?? ctx.user.openId,
+          trailName: trail?.name ?? "",
+        });
+
+        // Notificar owner sobre emissão de certificado
+        await notifyOwner({
+          title: `🏆 Certificado emitido`,
+          content: `**${ctx.user.name ?? ctx.user.openId}** concluiu a trilha **${trail?.name ?? input.trailId}** e recebeu o certificado com código \`${code}\`.`,
+        }).catch(() => {});
+
         return cert;
       }),
   }),
