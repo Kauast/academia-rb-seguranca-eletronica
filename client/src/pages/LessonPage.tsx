@@ -18,6 +18,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 
+const LOGO_URL = "/manus-storage/logo-rb-48_c885cae4.png";
+
 export default function LessonPage() {
   const { lessonId } = useParams<{ lessonId: string }>();
   const id = parseInt(lessonId ?? "0", 10);
@@ -106,10 +108,11 @@ export default function LessonPage() {
             className="flex items-center gap-2"
             onClick={() => navigate("/")}
           >
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Shield className="w-4 h-4 text-primary-foreground" />
+            <img src={LOGO_URL} alt="Logo RB" className="w-8 h-8 object-contain" />
+            <div className="flex flex-col leading-tight">
+              <span className="font-bold text-base tracking-tight">Academia RB</span>
+              <span className="text-[9px] text-muted-foreground uppercase tracking-wide hidden sm:block">Segurança Eletrônica</span>
             </div>
-            <span className="font-bold text-lg">Academia RB</span>
           </button>
 
           {/* Navegação rápida no header */}

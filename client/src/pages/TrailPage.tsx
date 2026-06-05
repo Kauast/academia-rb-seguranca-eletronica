@@ -14,6 +14,8 @@ import {
   ClipboardList, Award, Lock, LogOut, User, Settings, LayoutDashboard
 } from "lucide-react";
 
+const LOGO_URL = "/manus-storage/logo-rb-48_c885cae4.png";
+
 export default function TrailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { user, isAuthenticated, loading, logout } = useAuth();
@@ -70,10 +72,11 @@ export default function TrailPage() {
       <header className="sticky top-0 z-50 border-b border-border/50 backdrop-blur-md bg-background/80">
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Shield className="w-4 h-4 text-primary-foreground" />
+            <img src={LOGO_URL} alt="Logo RB" className="w-8 h-8 object-contain" />
+            <div className="flex flex-col leading-tight">
+              <span className="font-bold text-base tracking-tight">Academia RB</span>
+              <span className="text-[9px] text-muted-foreground uppercase tracking-wide hidden sm:block">Segurança Eletrônica</span>
             </div>
-            <span className="font-bold text-lg">Academia RB</span>
           </div>
           <nav className="hidden md:flex items-center gap-1">
             {isAuthenticated && (

@@ -47,4 +47,4 @@
 - [x] Navegação entre aulas: endpoints previousLesson e nextLesson no backend
 - [x] Navegação entre aulas: botões Anterior/Próxima na LessonPage
 - [x] Notificações: notifyOwner ao completar aula e ao emitir certificado
-- [ ] Domínio próprio: configurar academia.rbseguranca.com.br no painel
+- [ ] Domínio próprio: configurar academia.rbseguranca.com.br no painel (requer ação manual no painel Settings → Domains)

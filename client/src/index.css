@@ -42,39 +42,59 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  /* Dark tech theme — Academia RB */
-  --background: oklch(0.13 0.02 240);
-  --foreground: oklch(0.95 0.01 240);
-  --card: oklch(0.17 0.025 240);
-  --card-foreground: oklch(0.95 0.01 240);
-  --popover: oklch(0.17 0.025 240);
-  --popover-foreground: oklch(0.95 0.01 240);
-  --primary: oklch(0.62 0.22 250);
-  --primary-foreground: oklch(0.98 0.005 240);
-  --secondary: oklch(0.22 0.03 240);
-  --secondary-foreground: oklch(0.88 0.01 240);
-  --muted: oklch(0.20 0.025 240);
-  --muted-foreground: oklch(0.60 0.02 240);
-  --accent: oklch(0.55 0.20 180);
-  --accent-foreground: oklch(0.98 0.005 240);
-  --destructive: oklch(0.55 0.22 25);
-  --border: oklch(0.28 0.03 240);
-  --input: oklch(0.22 0.03 240);
-  --ring: oklch(0.62 0.22 250);
-  --chart-1: oklch(0.62 0.22 250);
-  --chart-2: oklch(0.55 0.20 180);
-  --chart-3: oklch(0.70 0.18 130);
-  --chart-4: oklch(0.65 0.20 60);
-  --chart-5: oklch(0.60 0.22 320);
-  --sidebar: oklch(0.15 0.025 240);
-  --sidebar-foreground: oklch(0.88 0.01 240);
-  --sidebar-primary: oklch(0.62 0.22 250);
-  --sidebar-primary-foreground: oklch(0.98 0.005 240);
-  --sidebar-accent: oklch(0.20 0.03 240);
-  --sidebar-accent-foreground: oklch(0.88 0.01 240);
-  --sidebar-border: oklch(0.25 0.03 240);
-  --sidebar-ring: oklch(0.62 0.22 250);
+  --radius: 0.75rem;
+
+  /* ── Academia RB — Identidade: Escuro Premium com Dourado ── */
+  /* Fundo principal: azul-marinho muito escuro, quase preto */
+  --background:          oklch(0.12 0.018 245);
+  --foreground:          oklch(0.94 0.008 245);
+
+  /* Cards: um tom acima do fundo, com leve profundidade */
+  --card:                oklch(0.16 0.022 245);
+  --card-foreground:     oklch(0.94 0.008 245);
+  --popover:             oklch(0.16 0.022 245);
+  --popover-foreground:  oklch(0.94 0.008 245);
+
+  /* Primary: dourado da identidade RB */
+  --primary:             oklch(0.76 0.14 80);
+  --primary-foreground:  oklch(0.12 0.018 245);
+
+  /* Secondary: cinza-azulado suave */
+  --secondary:           oklch(0.22 0.025 245);
+  --secondary-foreground: oklch(0.88 0.008 245);
+
+  /* Muted: para textos e elementos de apoio */
+  --muted:               oklch(0.20 0.022 245);
+  --muted-foreground:    oklch(0.58 0.015 245);
+
+  /* Accent: prata/cinza claro — complementa o dourado */
+  --accent:              oklch(0.30 0.025 245);
+  --accent-foreground:   oklch(0.94 0.008 245);
+
+  /* Destructive */
+  --destructive:         oklch(0.55 0.22 25);
+
+  /* Bordas e inputs */
+  --border:              oklch(0.26 0.025 245);
+  --input:               oklch(0.20 0.022 245);
+  --ring:                oklch(0.76 0.14 80);
+
+  /* Charts */
+  --chart-1:             oklch(0.76 0.14 80);
+  --chart-2:             oklch(0.65 0.18 180);
+  --chart-3:             oklch(0.70 0.16 130);
+  --chart-4:             oklch(0.68 0.18 320);
+  --chart-5:             oklch(0.60 0.20 250);
+
+  /* Sidebar */
+  --sidebar:             oklch(0.10 0.016 245);
+  --sidebar-foreground:  oklch(0.88 0.008 245);
+  --sidebar-primary:     oklch(0.76 0.14 80);
+  --sidebar-primary-foreground: oklch(0.12 0.018 245);
+  --sidebar-accent:      oklch(0.18 0.022 245);
+  --sidebar-accent-foreground: oklch(0.88 0.008 245);
+  --sidebar-border:      oklch(0.22 0.022 245);
+  --sidebar-ring:        oklch(0.76 0.14 80);
 }
 
 @layer base {
@@ -84,11 +104,18 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   .flex {
     min-width: 0;
     min-height: 0;
   }
+  /* Scrollbar personalizada */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: oklch(0.30 0.025 245); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: oklch(0.76 0.14 80 / 0.6); }
 }
 
 @layer utilities {
@@ -96,21 +123,41 @@
     @apply mx-auto px-4 sm:px-6 lg:px-8;
     max-width: 1280px;
   }
+
+  /* Hero com gradiente dourado suave */
   .gradient-hero {
-    background: radial-gradient(ellipse 80% 60% at 50% -10%, oklch(0.62 0.22 250 / 0.25), transparent),
-                radial-gradient(ellipse 60% 40% at 80% 60%, oklch(0.55 0.20 180 / 0.15), transparent),
-                var(--background);
+    background:
+      radial-gradient(ellipse 70% 50% at 50% -5%, oklch(0.76 0.14 80 / 0.18), transparent),
+      radial-gradient(ellipse 50% 40% at 85% 70%, oklch(0.65 0.18 180 / 0.10), transparent),
+      var(--background);
   }
+
+  /* Card com borda dourada suave */
   .gradient-card {
-    background: linear-gradient(135deg, oklch(0.17 0.025 240), oklch(0.20 0.03 240));
+    background: linear-gradient(145deg, oklch(0.17 0.022 245), oklch(0.20 0.026 245));
   }
+
+  /* Brilho dourado nos botões primários */
   .glow-primary {
-    box-shadow: 0 0 20px oklch(0.62 0.22 250 / 0.3);
+    box-shadow: 0 0 24px oklch(0.76 0.14 80 / 0.35), 0 2px 8px oklch(0.76 0.14 80 / 0.20);
   }
+
+  /* Texto gradiente dourado */
   .text-gradient {
-    background: linear-gradient(135deg, oklch(0.75 0.18 250), oklch(0.65 0.20 180));
+    background: linear-gradient(135deg, oklch(0.85 0.14 80), oklch(0.70 0.16 65));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+  }
+
+  /* Borda dourada animada para cards de destaque */
+  .border-gold {
+    border-color: oklch(0.76 0.14 80 / 0.5);
+  }
+
+  /* Separador dourado */
+  .divider-gold {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, oklch(0.76 0.14 80 / 0.6), transparent);
   }
 }
